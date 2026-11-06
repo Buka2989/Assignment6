@@ -1,0 +1,49 @@
+@startuml
+title My project elements and visitors
+skinparam classAttributeIconSize 0
+hide empty members
+
+interface ProjectElement {
+    +accept(visitor: ProjectVisitor): void
+}
+
+interface ProjectVisitor {
+    +visit(file: SourceCodeFile): void
+    +visit(file: TestFile): void
+    +visit(file: ConfigurationFile): void
+    +visit(file: DependencyFile): void
+    +visit(directory: Directory): void
+}
+
+class SourceCodeFile <<record>>
+class TestFile <<record>>
+class ConfigurationFile <<record>>
+class DependencyFile <<record>>
+class Dependency <<record>>
+class Directory <<record>>
+
+class SecurityAuditVisitor
+class ProjectStatisticsVisitor
+class QualityGateVisitor
+class ComplianceVisitor
+class TechnicalDebtVisitor
+
+ProjectElement <|.. SourceCodeFile
+ProjectElement <|.. TestFile
+ProjectElement <|.. ConfigurationFile
+ProjectElement <|.. DependencyFile
+ProjectElement <|.. Directory
+
+ProjectVisitor <|.. SecurityAuditVisitor
+ProjectVisitor <|.. ProjectStatisticsVisitor
+ProjectVisitor <|.. QualityGateVisitor
+ProjectVisitor <|.. ComplianceVisitor
+ProjectVisitor <|.. TechnicalDebtVisitor
+
+ProjectElement ..> ProjectVisitor : accept(visitor) calls visit(this)
+ProjectVisitor ..> ProjectElement : typed visit overloads
+Directory "1" o-- "0..*" ProjectElement : children
+DependencyFile "1" o-- "0..*" Dependency : dependencies
+QualityGateVisitor *-- SecurityAuditVisitor
+QualityGateVisitor *-- ProjectStatisticsVisitor
+@enduml

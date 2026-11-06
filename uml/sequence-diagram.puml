@@ -1,0 +1,32 @@
+@startuml
+title How I audit a source file
+participant "Main" as Main
+participant "project : Directory" as Project
+participant "src : Directory" as Src
+participant "payment : SourceCodeFile" as File
+participant "security : SecurityAuditVisitor" as Audit
+
+Main -> Project : accept(security)
+activate Project
+Project -> Audit : visit(project)
+Project -> Src : accept(security)
+activate Src
+Src -> Audit : visit(src)
+Src -> File : accept(security)
+activate File
+File -> Audit : visit(payment)
+activate Audit
+Audit -> Audit : Check credential and high-risk flags
+deactivate Audit
+File --> Src
+deactivate File
+Src --> Project
+deactivate Src
+note over Project
+  I use the same accept call for each remaining child.
+end note
+Project --> Main
+deactivate Project
+Main -> Audit : report()
+Audit --> Main : Security findings
+@enduml
